@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RevisaHumanas</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f6f8;
+      color: #222222;
+      line-height: 1.6;
+    }
+
+    header {
+      background: linear-gradient(135deg, #306227, #102812);
+      color: white;
+      padding: 35px 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2.3rem;
+      margin-bottom: 8px;
+    }
+
+    header p {
+      color: #d9e2ec;
+    }
+
+    nav {
+      background: white;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      padding: 15px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    nav button {
+      border: none;
+      background: #e8edf2;
+      color: #275524;
+      padding: 10px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.2s;
+    }
+
+    nav button:hover,
+    nav button.active {
+      background: #325524;
+      color: white;
+    }
+
+    main {
+      max-width: 1000px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    .section-title {
+      margin-bottom: 20px;
+      color: #376029;
+    }
+
+    .topics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+      margin-bottom: 20px;
+    }
+
+    .card h3 {
+      color: #265524;
+      margin-bottom: 12px;
+    }
+
+    .card ul {
+      padding-left: 20px;
+    }
+
+    .topic-btn {
+      margin-top: 15px;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 7px;
+      background: #255524;
+      color: white;
+      cursor: pointer;
+    }
+
+    /* Flashcards */
+
+    .flashcard-container {
+      max-width: 600px;
+      margin: auto;
+      text-align: center;
+    }
+
+    .flashcard {
+      min-height: 250px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 30px;
+      cursor: pointer;
+      margin-bottom: 20px;
+      transition: transform 0.3s;
+    }
+
+    .flashcard:hover {
+      transform: scale(1.01);
+    }
+
+    .flashcard h2 {
+      color: #2c5524;
+    }
+
+    .flashcard p {
+      font-size: 1.1rem;
+    }
+
+    .flashcard-controls {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+    .control-btn {
+      padding: 10px 18px;
+      border: none;
+      border-radius: 7px;
+      background: #243b55;
+      color: white;
+      cursor: pointer;
+    }
+
+    /* Quiz */
+
+    .quiz-question {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .option {
+      display: block;
+      width: 100%;
+      text-align: left;
+      margin: 10px 0;
+      padding: 13px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .option:hover {
+      border-color: #243b55;
+      background: #f1f5f9;
+    }
+
+    .option.correct {
+      background: #d4edda;
+      border-color: #28a745;
+    }
+
+    .option.wrong {
+      background: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    #quiz-feedback {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    .score {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px;
+      margin-top: 40px;
+      background: #141e30;
+      color: #ddd;
+    }
+
+    @media (max-width: 600px) {
+      header h1 {
+        font-size: 1.8rem;
+      }
+
+      nav {
+        flex-wrap: wrap;
+      }
+
+      nav button {
+        flex: 1;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>𝕸und0 das H𝓾man@s</h1>
+    <p>Uma forma simples de revisar conteúdos de Ciências Humanas.</p>
+  </header>
+
+  <nav>
+    <button class="active" onclick="mostrarSecao('resumos', this)">
+      Resumos
+    </button>
+
+    <button onclick="mostrarSecao('flashcards', this)">
+      Flashcards
+    </button>
+
+    <button onclick="mostrarSecao('quiz', this)">
+      Quiz
+    </button>
+  </nav>
+
+  <main>
+
+    <!-- RESUMOS -->
+
+    <section id="resumos" class="section active">
+
+      <h2 class="section-title">Resumo Básico para Revisão</h2>
+
+      <div class="topics">
+
+        <div class="card">
+          <h3>🌊 Hidrografia</h3>
+
+          <p>
+            A hidrografia estuda as águas presentes na superfície e no
+            subsolo terrestre.
+          </p>
+
+          <ul>
+            <li><strong>Bacia hidrográfica:</strong> área drenada por um rio principal e seus afluentes.</li>
+            <li><strong>Nascente:</strong> local onde o rio começa.</li>
+            <li><strong>Foz:</strong> local onde o rio termina, podendo desaguar em outro rio, lago ou oceano.</li>
+            <li><strong>Afluente:</strong> rio que deságua em outro rio.</li>
+            <li><strong>Rio principal:</strong> curso d'água de maior importância dentro de uma bacia.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>♻️ Sustentabilidade</h3>
+
+          <p>
+            Sustentabilidade é a busca pelo desenvolvimento econômico e
+            social sem comprometer os recursos necessários às futuras gerações.
+          </p>
+
+          <ul>
+            <li>Uso consciente dos recursos naturais.</li>
+            <li>Redução da poluição e dos resíduos.</li>
+            <li>Preservação da biodiversidade.</li>
+            <li>Uso de fontes de energia renováveis.</li>
+            <li>Equilíbrio entre economia, sociedade e meio ambiente.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>🇧🇷 Ditadura Militar</h3>
+
+          <p>
+            O regime militar brasileiro teve início em 1964 e terminou em
+            1985, sendo marcado pela concentração de poder político e pela
+            restrição de direitos democráticos.
+          </p>
+
+          <ul>
+            <li>Início do regime: 1964.</li>
+            <li>Fim do regime: 1985.</li>
+            <li>Censura aos meios de comunicação.</li>
+            <li>Perseguição política e repressão.</li>
+            <li>AI-5, decretado em 1968, ampliou a repressão política.</li>
+            <li>Processo de abertura política ocorreu gradualmente.</li>
+          </ul>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- FLASHCARDS -->
+
+    <section id="flashcards" class="section">
+
+      <h2 class="section-title">Flashcards</h2>
+
+      <div class="flashcard-container">
+
+        <div class="flashcard" id="flashcard" onclick="virarFlashcard()">
+          <div>
+            <h2 id="flashcard-title">O que é uma bacia hidrográfica?</h2>
+            <p id="flashcard-answer" style="display:none;">
+              É uma área drenada por um rio principal e seus afluentes.
+            </p>
+          </div>
+        </div>
+
+        <div class="flashcard-controls">
+          <button class="control-btn" onclick="anteriorCard()">
+            ← Anterior
+          </button>
+
+          <button class="control-btn" onclick="virarFlashcard()">
+            Virar
+          </button>
+
+          <button class="control-btn" onclick="proximoCard()">
+            Próximo →
+          </button>
+        </div>
+
+        <p id="card-counter" style="margin-top:15px;">
+          Card 1 de 9
+        </p>
+
+      </div>
+    </section>
+
+
+    <!-- QUIZ -->
+
+    <section id="quiz" class="section">
+
+      <h2 class="section-title">Quiz de Revisão</h2>
+
+      <div class="card">
+
+        <div class="score" id="score">
+          Pontuação: 0
+        </div>
+
+        <div class="quiz-question" id="question">
+          Carregando pergunta...
+        </div>
+
+        <div id="options"></div>
+
+        <p id="quiz-feedback"></p>
+
+        <button
+          class="control-btn"
+          id="next-question"
+          onclick="proximaQuestao()"
+          style="display:none; margin-top:15px;"
+        >
+          Próxima questão
+        </button>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <footer>
+    <p>Mundo das Humanas — Estude, revise e aprenda.</p>
+  </footer>
+
+
+  <script>
+
+    /* ==========================
+       NAVEGAÇÃO
+    ========================== */
+
+    function mostrarSecao(id, botao) {
+
+      document.querySelectorAll('.section').forEach(section => {
+        section.classList.remove('active');
+      });
+
+      document.getElementById(id).classList.add('active');
+
+      document.querySelectorAll('nav button').forEach(button => {
+        button.classList.remove('active');
+      });
+
+      botao.classList.add('active');
+    }
+
+
+    /* ==========================
+       FLASHCARDS
+    ========================== */
+
+    const flashcards = [
+
+      {
+        pergunta: "O que é uma bacia hidrográfica?",
+        resposta: "É uma área drenada por um rio principal e seus afluentes."
+      },
+
+      {
+        pergunta: "O que é a nascente de um rio?",
+        resposta: "É o local onde o rio se inicia."
+      },
+
+      {
+        pergunta: "O que é a foz de um rio?",
+        resposta: "É o local onde o rio termina, desaguando em outro rio, lago ou oceano."
+      },
+
+      {
+        pergunta: "O que é sustentabilidade?",
+        resposta: "É o desenvolvimento que busca atender às necessidades atuais sem comprometer as futuras gerações."
+      },
+
+      {
+        pergunta: "Quais são três dimensões importantes da sustentabilidade?",
+        resposta: "As dimensões ambiental, social e econômica."
+      },
+
+      {
+        pergunta: "Quando começou a Ditadura Militar no Brasil?",
+        resposta: "Em 1964."
+      },
+
+      {
+        pergunta: "Quando terminou a Ditadura Militar no Brasil?",
+        resposta: "Em 1985."
+      },
+
+      {
+        pergunta: "O que foi o AI-5?",
+        resposta: "Foi o Ato Institucional nº 5, decretado em 1968, que ampliou os poderes repressivos do regime militar."
+      },
+
+      {
+        pergunta: "O que era a censura durante a Ditadura Militar?",
+        resposta: "Era o controle e a restrição de conteúdos considerados contrários aos interesses do regime."
+      }
+
+    ];
+
+    let cardAtual = 0;
+    let mostrandoResposta = false;
+
+    function atualizarFlashcard() {
+
+      const card = flashcards[cardAtual];
+
+      document.getElementById("flashcard-title").textContent =
+        card.pergunta;
+
+      document.getElementById("flashcard-answer").textContent =
+        card.resposta;
+
+      document.getElementById("flashcard-answer").style.display =
+        mostrandoResposta ? "block" : "none";
+
+      document.getElementById("card-counter").textContent =
+        `Card ${cardAtual + 1} de ${flashcards.length}`;
+    }
+
+    function virarFlashcard() {
+
+      mostrandoResposta = !mostrandoResposta;
+
+      atualizarFlashcard();
+    }
+
+    function proximoCard() {
+
+      cardAtual++;
+
+      if (cardAtual >= flashcards.length) {
+        cardAtual = 0;
+      }
+
+      mostrandoResposta = false;
+
+      atualizarFlashcard();
+    }
+
+    function anteriorCard() {
+
+      cardAtual--;
+
+      if (cardAtual < 0) {
+        cardAtual = flashcards.length - 1;
+      }
+
+      mostrandoResposta = false;
+
+      atualizarFlashcard();
+    }
+
+
+    /* ==========================
+       QUIZ
+    ========================== */
+
+    const perguntas = [
+
+      {
+        pergunta: "O que é uma bacia hidrográfica?",
+        opcoes: [
+          "Uma área drenada por um rio principal e seus afluentes.",
+          "Um lago formado exclusivamente pela chuva.",
+          "Uma região sem cursos de água.",
+          "Uma área ocupada somente por oceanos."
+        ],
+        correta: 0
+      },
+
+      {
+        pergunta: "Qual alternativa representa uma prática sustentável?",
+        opcoes: [
+          "Desperdício de água.",
+          "Desmatamento sem controle.",
+          "Uso consciente dos recursos naturais.",
+          "Descarte de resíduos em rios."
+        ],
+        correta: 2
+      },
+
+      {
+        pergunta: "Em que ano teve início a Ditadura Militar no Brasil?",
+        opcoes: [
+          "1930",
+          "1945",
+          "1964",
+          "1985"
+        ],
+        correta: 2
+      },
+
+      {
+        pergunta: "Em que ano terminou a Ditadura Militar brasileira?",
+        opcoes: [
+          "1964",
+          "1970",
+          "1980",
+          "1985"
+        ],
+        correta: 3
+      },
+
+      {
+        pergunta: "O que é um afluente?",
+        opcoes: [
+          "O local onde nasce um rio.",
+          "Um rio que deságua em outro rio.",
+          "O local onde um rio termina no oceano.",
+          "Uma área sem drenagem."
+        ],
+        correta: 1
+      },
+
+      {
+        pergunta: "Qual acontecimento está relacionado ao ano de 1968 durante a Ditadura Militar?",
+        opcoes: [
+          "Criação da Constituição de 1988.",
+          "Decretação do AI-5.",
+          "Fim do regime militar.",
+          "Proclamação da República."
+        ],
+        correta: 1
+      }
+
+    ];
+
+    let questaoAtual = 0;
+    let pontos = 0;
+
+    function carregarQuestao() {
+
+      const pergunta = perguntas[questaoAtual];
+
+      document.getElementById("question").textContent =
+        pergunta.pergunta;
+
+      const optionsContainer =
+        document.getElementById("options");
+
+      optionsContainer.innerHTML = "";
+
+      document.getElementById("quiz-feedback").textContent = "";
+
+      document.getElementById("next-question").style.display = "none";
+
+      pergunta.opcoes.forEach((opcao, indice) => {
+
+        const button = document.createElement("button");
+
+        button.classList.add("option");
+
+        button.textContent = opcao;
+
+        button.onclick = () => responder(indice, button);
+
+        optionsContainer.appendChild(button);
+
+      });
+    }
+
+
+    function responder(indice, botao) {
+
+      const pergunta = perguntas[questaoAtual];
+
+      const botoes =
+        document.querySelectorAll(".option");
+
+      botoes.forEach(button => {
+        button.disabled = true;
+      });
+
+      if (indice === pergunta.correta) {
+
+        botao.classList.add("correct");
+
+        pontos++;
+
+        document.getElementById("quiz-feedback").textContent =
+          "✓ Resposta correta!";
+
+      } else {
+
+        botao.classList.add("wrong");
+
+        botoes[pergunta.correta].classList.add("correct");
+
+        document.getElementById("quiz-feedback").textContent =
+          "✗ Resposta incorreta.";
+      }
+
+      document.getElementById("score").textContent =
+        `Pontuação: ${pontos}`;
+
+      document.getElementById("next-question").style.display =
+        "inline-block";
+    }
+
+
+    function proximaQuestao() {
+
+      questaoAtual++;
+
+      if (questaoAtual >= perguntas.length) {
+
+        document.getElementById("question").textContent =
+          "Quiz concluído!";
+
+        document.getElementById("options").innerHTML = "";
+
+        document.getElementById("quiz-feedback").textContent =
+          `Você acertou ${pontos} de ${perguntas.length} questões.`;
+
+        document.getElementById("next-question").textContent =
+          "Refazer quiz";
+
+        document.getElementById("next-question").style.display =
+          "inline-block";
+
+        document.getElementById("next-question").onclick =
+          reiniciarQuiz;
+
+        return;
+      }
+
+      carregarQuestao();
+    }
+
+
+    function reiniciarQuiz() {
+
+      questaoAtual = 0;
+      pontos = 0;
+
+      document.getElementById("next-question").textContent =
+        "Próxima questão";
+
+      document.getElementById("next-question").onclick =
+        proximaQuestao;
+
+      document.getElementById("score").textContent =
+        "Pontuação: 0";
+
+      carregarQuestao();
+    }
+
+
+    /* Inicialização */
+
+    atualizarFlashcard();
+    carregarQuestao();
+
+  </script>
+
+</body>
+</html>
